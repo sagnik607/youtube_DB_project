@@ -1,0 +1,23 @@
+# The main pipeline for youtube_DB_assetbundle
+
+resources:
+  pipelines:
+    youtube_DB_assetbundle_etl:
+      name: bronze2silver_ingestion
+      configuration:
+        Catelog_name: ${var.catalog}
+      libraries:
+        - glob:
+            include: ../src/DLT_pipelines/bronze2silver_ingestion/transformations/**
+      schema: silver
+      continuous: false
+      development: false
+      photon: true
+      channel: CURRENT
+      catalog: ${var.catalog}
+      serverless: true
+      root_path: ../src/DLT_pipelines/bronze2silver_ingestion
+
+
+
+      

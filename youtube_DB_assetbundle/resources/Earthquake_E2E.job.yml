@@ -1,0 +1,32 @@
+resources:
+  jobs:
+    youtube_earthquake_e2e_job:
+      name: youtube_earthquake_e2e_job
+      tasks:
+        - task_key: Ingestion_bronze
+          notebook_task:
+            notebook_path: ../src/notebooks/Ingestion_bronze.ipynb
+            base_parameters:
+              Catelog_name: ${var.catalog}
+            source: WORKSPACE
+        - task_key: silver_ingestion
+          depends_on:
+            - task_key: Ingestion_bronze
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.youtube_DB_assetbundle_etl.id}
+            full_refresh: false
+        - task_key: Earthquake_dashboard
+          depends_on:
+            - task_key: silver_ingestion
+          dashboard_task:
+            subscription:
+              subscribers:
+                - user_name: paharisagnik607@gmail.com
+            warehouse_id: ${var.warehouse_id}
+            dashboard_id: 01f0ec6e5bcb1cbb8b07790334d4516e
+      queue:
+        enabled: true
+      parameters:
+        - name: Catelog_name
+          default: ${var.catalog}
+      performance_target: PERFORMANCE_OPTIMIZED
